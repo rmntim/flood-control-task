@@ -2,10 +2,26 @@ package main
 
 import (
 	"context"
+	floodcontrol "task/control"
+	"time"
 )
 
 func main() {
+	redisFlood := floodcontrol.NewRedisFloodControl("localhost:6379", 10*time.Second, 10)
+	ctx := context.Background()
+	id := int64(1)
 
+	for i := 0; i < 15; i++ {
+		passed, err := redisFlood.Check(ctx, id)
+		if err != nil {
+			panic(err)
+		}
+		if passed {
+			println("passed")
+		} else {
+			println("failed")
+		}
+	}
 }
 
 // FloodControl интерфейс, который нужно реализовать.
